@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -13,17 +16,37 @@ func main() {
 	// Laskutoimitus
 	var lt string
 
-	// Kysy ensimmäinen luku.
-	fmt.Println("Anna ensimmäinen luku:")
-	fmt.Scanf("%f", &luku1)
+	// Kysy ensimmäistä lukua
+	for {
+		fmt.Println("Anna ensimmäinen luku:")
+		_, err := fmt.Fscan(os.Stdin, &luku1)
+		if err == nil {
+			break
+		} else {
+			fmt.Println("Syöte ei kelpaa!")
+			fmt.Printf("Virhe: %s\n\n", err)
+		}
+	}
 
-	// Kysy toinen luku.
-	fmt.Println("Anna toinen luku:")
-	fmt.Scanf("%f", &luku2)
+	// Kysy toista lukua
+	for {
+		println("Anna toinen luku")
+		lukija := bufio.NewReader(os.Stdin)
+		mj, _ := lukija.ReadString('\n')
+		luvut := strings.ReplaceAll(mj, " ", "")
+		luvut = strings.TrimSpace(luvut)
+		println(luvut)
+		l, err := strconv.ParseFloat(luvut, 64)
+		if err == nil {
+			luku2 = l
+			break
+		}
+		fmt.Println(err)
+	}
 
 	// Kysy laskutoimitus.
-	fmt.Println("Anna laskutoimitus:")
-	fmt.Scanf("%s", <)
+	fmt.Println("Anna laskutoimitus (+, -, /, *):")
+	fmt.Scanf("%s", &lt)
 
 	// Tulostetaan, mitä luettiin.
 	fmt.Println("Lasken: ", luku1, lt, luku2)
@@ -38,18 +61,28 @@ func main() {
 	switch lt {
 	case "+":
 		tulos = luku1 + luku2
-		virhe = ""
+	case "-":
+		tulos = luku1 - luku2
+	case "/":
+		if luku2 != 0 {
+			tulos = luku1 / luku2
+		} else {
+			virhe = "Luvulla 0 ei jaa jakaa!"
+		}
+	case "*":
+		tulos = luku1 * luku2
+
 	default:
 		tulos = luku1 + rand.Float64()*luku2
-		virhe = "En tunnistanut laskutoimitusta '"+lt+"'. "+
-			"Tässä sinulle satunnaisluku: "+
+		virhe = "En tunnistanut laskutoimitusta '" + lt + "'. " +
+			"Tässä sinulle satunnaisluku: " +
 			strconv.FormatFloat(tulos, 'G', 3, 64)
 	}
 
 	// Tulostetaan laskutoimituksen tulos tai virhe.
-	if virhe=="" {
-		fmt.Println("Tulos on", tulos)
-	} else {
+	if virhe != "" {
 		fmt.Println("Virhe:", virhe)
+	} else {
+		fmt.Println("Tulos on", strconv.FormatFloat(tulos, 'f', -1, 64))
 	}
 }
